@@ -3,8 +3,8 @@ import { postService } from "./post.service";
 
 const createPost = async (req: Request, res: Response) => {
     try {
-        console.log(req.user);
-        const result = await postService.createPost(req.body);
+        // console.log(req.user);
+        const result = await postService.createPost(req.body, req.user?.id as string);
         res.status(201).json(result);
     }
     catch (error) {
