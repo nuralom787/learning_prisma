@@ -4,6 +4,7 @@ import verifyRole, { UserRole } from '../../middlewares/authMiddleware';
 
 const router = Router();
 
+router.get('/', postController.getAllPosts);
 
 router.post('/', verifyRole(UserRole.User), postController.createPost);
 
