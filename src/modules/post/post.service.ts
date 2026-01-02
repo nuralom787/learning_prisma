@@ -1,3 +1,4 @@
+import { constants } from "node:buffer";
 import { Post } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
@@ -24,6 +25,18 @@ const getAllPosts = async (payload: Record<string, any>) => {
         ];
     };
 
+    if (payload.isFeatured) {
+        where.isFeatured = payload.isFeatured === 'true';
+    };
+
+    if (payload.status) {
+        where.status = payload.status.toUpperCase();
+    };
+
+    if (payload.authorId) {
+        where.authorId = { equals: payload.authorId, mode: 'insensitive' };
+    };
+
     if (payload.tags && payload.tags.length > 0) {
         where.tags = {
             hasEvery: payload.tags as string[],
@@ -32,30 +45,6 @@ const getAllPosts = async (payload: Record<string, any>) => {
 
     const posts = await prisma.post.findMany({
         where: where
-        // {
-        //     OR: [
-        //         {
-        //             title: {
-        //                 contains: payload.search,
-        //                 mode: 'insensitive'
-        //             }
-        //         },
-        //         {
-        //             content: {
-        //                 contains: payload.search,
-        //                 mode: 'insensitive'
-        //             }
-        //         },
-        //         {
-        //             tags: {
-        //                 has: payload.search
-        //             }
-        //         }
-        //     ],
-        //     tags: {
-        //         hasEvery: payload.tags as string[]
-        //     }
-        // }
     });
     return posts;
 }
