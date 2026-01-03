@@ -1,4 +1,3 @@
-import { constants } from "node:buffer";
 import { Post } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 

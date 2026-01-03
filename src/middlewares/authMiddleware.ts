@@ -5,8 +5,8 @@ import { Request, Response } from "express";
 import { auth } from "../lib/auth";
 
 export enum UserRole {
-    User = "user",
-    Admin = "admin"
+    USER = "USER",
+    ADMIN = "ADMIN"
 };
 
 // ! Declare custom properties on Express Request object
