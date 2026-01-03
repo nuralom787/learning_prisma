@@ -43,9 +43,15 @@ const getAllPosts = async (payload: Record<string, any>) => {
     };
 
     const posts = await prisma.post.findMany({
-        where: where
+        where: where,
+        skip: payload.skip,
+        take: payload.take,
+        orderBy: payload.orderBy ? { createdAt: payload.orderBy } : {},
     });
-    return posts;
+
+    const totalPosts = await prisma.post.count({ where });
+
+    return { posts, totalPosts };
 }
 
 export const postService = {
