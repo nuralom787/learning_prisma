@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { postService } from "./post.service";
-import paginationHelper from "../../helpers/paginationhelper";
+import pagination from "../../helpers/paginationHelper";
 
+// ! Create New Posts.
 const createPost = async (req: Request, res: Response) => {
     try {
         // console.log(req.user);
@@ -13,13 +14,14 @@ const createPost = async (req: Request, res: Response) => {
     }
 };
 
+// ! Get All Posts with Filters.
 const getAllPosts = async (req: Request, res: Response) => {
     try {
         const search = req.query.search as string | undefined;
         const isFeatured = req.query.isFeatured as string | undefined;
         const status = req.query.status as string | undefined;
         const authorId = req.query.authorId as string | undefined;
-        const { skip, take, orderBy } = paginationHelper(req.query);
+        const { skip, take, orderBy } = pagination(req.query);
         const tags = req.query.tags as string | undefined;
         const tagsArray = tags ? tags.split(',') : undefined;
 
@@ -31,7 +33,19 @@ const getAllPosts = async (req: Request, res: Response) => {
     }
 };
 
+// ! Get Single Post by ID.
+const getSinglePost = async (req: Request, res: Response) => {
+    try {
+        const post = await postService.getSinglePost(req.params.id as string);
+        res.status(200).json(post);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Failed to get post" });
+    }
+};
+
 export const postController = {
     createPost,
     getAllPosts,
+    getSinglePost,
 };

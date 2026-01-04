@@ -1,7 +1,7 @@
 import { Post } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
-
+// ! Create New Posts.
 const createPost = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'authorId'>, userId: string) => {
     const result = await prisma.post.create({
         data: {
@@ -13,6 +13,8 @@ const createPost = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'a
     return result;
 };
 
+
+// ! Get All Posts with Filters.
 const getAllPosts = async (payload: Record<string, any>) => {
     const where: any = {};
 
@@ -52,9 +54,57 @@ const getAllPosts = async (payload: Record<string, any>) => {
     const totalPosts = await prisma.post.count({ where });
 
     return { posts, totalPosts };
-}
+};
+
+
+// ! Get Single Post by ID.
+const getSinglePost = async (postId: string) => {
+    // const post = await prisma.post.findUnique({
+    //     where: { id: postId },
+    // });
+
+    // if (!post) {
+    //     throw new Error('Post not found');
+    // };
+
+    // const updateViewCount = await prisma.post.update({
+    //     where: { id: postId },
+    //     data: { views: { increment: 1 } },
+    // });
+
+    // if (updateViewCount) {
+    //     return post;
+    // } else {
+    //     throw new Error('Failed to update view count');
+    // };
+
+    // ! Optimized Single Post Retrieval with $transaction Method.
+    const results = await prisma.$transaction(async (tx) => {
+        const updateViewCount = await tx.post.update({
+            where: { id: postId },
+            data: { views: { increment: 1 } },
+        });
+
+        if (updateViewCount) {
+            const post = await tx.post.findUnique({
+                where: { id: postId },
+            });
+
+            if (!post) {
+                return { success: false, message: 'No post found by given ID' };
+            };
+            return post;
+        }
+        else {
+            throw new Error();
+        };
+    });
+    return results;
+};
+
 
 export const postService = {
     createPost,
     getAllPosts,
+    getSinglePost,
 };
