@@ -49,6 +49,9 @@ const getAllPosts = async (payload: Record<string, any>) => {
         skip: payload.skip,
         take: payload.take,
         orderBy: payload.orderBy ? { createdAt: payload.orderBy } : {},
+        include: {
+            _count: { select: { comments: true } },
+        },
     });
 
     const totalPosts = await prisma.post.count({ where });
@@ -88,6 +91,16 @@ const getSinglePost = async (postId: string) => {
         if (updateViewCount) {
             const post = await tx.post.findUnique({
                 where: { id: postId },
+                include: {
+                    comments: {
+                        where: { parentId: null },
+                        orderBy: { createdAt: 'desc' },
+                        include: {
+                            replies: true,
+                        },
+                    },
+                    _count: { select: { comments: true } },
+                }
             });
 
             if (!post) {
