@@ -10,6 +10,8 @@ router.get('/author/:authorId', commentController.getCommentsByAuthorId);
 
 router.post('/', verifyRole(UserRole.ADMIN, UserRole.USER), commentController.createComment);
 
+router.patch('/:id', verifyRole(UserRole.ADMIN, UserRole.USER), commentController.updateComment);
+
 router.delete('/:id', verifyRole(UserRole.ADMIN, UserRole.USER), commentController.deleteComment);
 
 export const commentRouter = router;

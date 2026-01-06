@@ -1,3 +1,4 @@
+import { CommentStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 const createComment = async (payload: { content: string, authorId: string, postId: string, parentId?: string }) => {
@@ -54,28 +55,36 @@ const getCommentsByAuthorId = async (authorId: string) => {
 
 
 const deleteComment = async (data: { userId: string, userRole: string, commentId: string }) => {
+    // if (data.userRole === 'USER') {
+    await prisma.comment.findUniqueOrThrow({
+        where: { id: data.commentId, authorId: data.userId },
+    });
 
-    // if (data.userRole === 'ADMIN') {
-    //     const deletedComment = await prisma.comment.delete({
-    //         where: {
-    //             AND: [
-    //                 {
-    //                     commentId: {
-    //                         contains: data.commentId
-    //                     }
-    //                 },
-    //             ]
-    //         }
-    //     });
-    //     return data;
+    const result = await prisma.comment.delete({
+        where: { id: data.commentId, authorId: data.userId },
+    });
+
+    return result;
     // };
 
-    if (data.userRole === 'USER') {
-        const deletedComment = await prisma.comment.delete({
-            where: { id: data.commentId, authorId: data.userId },
-        });
-        return data;
-    };
+
+};
+
+
+const updateComment = async (commentId: string, authorId: string, body: { content?: string, status?: CommentStatus }) => {
+    // const result = { commentId, authorId, body };
+
+    await prisma.comment.findFirstOrThrow({
+        where: { id: commentId, authorId },
+    });
+
+    const result = await prisma.comment.update({
+        where: { id: commentId, authorId },
+        data: body
+    });
+
+
+    return result;
 };
 
 
@@ -84,4 +93,5 @@ export const commentService = {
     getCommentsById,
     getCommentsByAuthorId,
     deleteComment,
+    updateComment,
 };
