@@ -12,4 +12,8 @@ router.get('/:id', postController.getSinglePost);
 
 router.post('/', verifyRole(UserRole.ADMIN, UserRole.USER), postController.createPost);
 
+router.patch('/:id', verifyRole(UserRole.ADMIN, UserRole.USER), postController.updatePost);
+
+router.delete('/:id', verifyRole(UserRole.ADMIN, UserRole.USER), postController.deletePost);
+
 export const PostRouter = router;

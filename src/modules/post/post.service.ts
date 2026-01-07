@@ -118,17 +118,75 @@ const getSinglePost = async (postId: string) => {
 
 // ! Get All Posts by User ID.
 const getAllPostsByUser = async (userId: string) => {
+    await prisma.user.findUniqueOrThrow({
+        where: {
+            id: userId,
+            status: 'ACTIVE'
+        },
+    });
+
     const posts = await prisma.post.findMany({
         where: { authorId: userId },
         orderBy: { createdAt: 'desc' },
+        include: {
+            _count: { select: { comments: true } },
+        },
     });
-    return posts;
+
+    const totalPosts = posts.length;
+
+    return { posts, totalPosts };
 };
 
+
+// ! Update Post by ID.
+const updatePost = async (postId: string, data: Partial<Post>, authorId: string, authorRole: string) => {
+    await prisma.post.findFirstOrThrow({
+        where: { id: postId },
+    });
+
+    if (authorRole === 'ADMIN') {
+        const post = await prisma.post.update({
+            where: { id: postId },
+            data,
+        });
+        return post;
+    };
+
+    delete data.isFeatured;
+    const post = await prisma.post.update({
+        where: { id: postId, authorId },
+        data,
+    });
+
+    return post;
+};
+
+
+// ! Delete Post by ID.
+const deletePost = async (postId: string, authorId: string, authorRole: string) => {
+    await prisma.post.findFirstOrThrow({
+        where: { id: postId },
+    });
+
+    if (authorRole === 'ADMIN') {
+        const result = await prisma.post.delete({
+            where: { id: postId },
+        });
+        return result;
+    };
+
+    const result = await prisma.post.delete({
+        where: { id: postId, authorId },
+    });
+    return result;
+};
 
 export const postService = {
     createPost,
     getAllPosts,
     getSinglePost,
     getAllPostsByUser,
+    updatePost,
+    deletePost,
 };

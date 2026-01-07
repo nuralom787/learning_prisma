@@ -56,9 +56,42 @@ const getAllPostsByUser = async (req: Request, res: Response) => {
     }
 };
 
+
+// ! Update Post by ID.
+const updatePost = async (req: Request, res: Response) => {
+    try {
+        const postId = req.params.id as string;
+        const data = req.body;
+        const authorId = req.user?.id as string;
+        const authorRole = req.user?.role as string;
+        const updatedPost = await postService.updatePost(postId, data, authorId, authorRole);
+        res.status(200).json(updatedPost);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Failed to update post" });
+    }
+};
+
+
+// ! Delete Post by ID.
+const deletePost = async (req: Request, res: Response) => {
+    try {
+        const postId = req.params.id as string;
+        const authorId = req.user?.id as string;
+        const authorRole = req.user?.role as string;
+        const deletePost = await postService.deletePost(postId, authorId, authorRole);
+        res.status(204).json(deletePost);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Failed to delete post" });
+    }
+};
+
 export const postController = {
     createPost,
     getAllPosts,
     getSinglePost,
     getAllPostsByUser,
+    updatePost,
+    deletePost,
 };
