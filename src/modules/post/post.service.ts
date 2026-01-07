@@ -116,8 +116,19 @@ const getSinglePost = async (postId: string) => {
 };
 
 
+// ! Get All Posts by User ID.
+const getAllPostsByUser = async (userId: string) => {
+    const posts = await prisma.post.findMany({
+        where: { authorId: userId },
+        orderBy: { createdAt: 'desc' },
+    });
+    return posts;
+};
+
+
 export const postService = {
     createPost,
     getAllPosts,
     getSinglePost,
+    getAllPostsByUser,
 };

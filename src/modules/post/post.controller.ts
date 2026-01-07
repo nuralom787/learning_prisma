@@ -44,8 +44,21 @@ const getSinglePost = async (req: Request, res: Response) => {
     }
 };
 
+
+// ! Get All Posts by User ID.
+const getAllPostsByUser = async (req: Request, res: Response) => {
+    try {
+        const posts = await postService.getAllPostsByUser(req.user?.id as string);
+        res.status(200).json(posts);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Failed to get posts by user" });
+    }
+};
+
 export const postController = {
     createPost,
     getAllPosts,
     getSinglePost,
+    getAllPostsByUser,
 };

@@ -69,6 +69,18 @@ const updateComment = async (req: Request, res: Response) => {
 };
 
 
+const updateCommentByAdmin = async (req: Request, res: Response) => {
+    try {
+        const commentId = req.params.id;
+        const body = req.body;
+        const result = await commentService.updateCommentByAdmin(commentId as string, body);
+        res.status(200).json(result);
+    }
+    catch (err: any) {
+        console.log(err);
+        throw err;
+    };
+};
 
 export const commentController = {
     createComment,
@@ -76,4 +88,5 @@ export const commentController = {
     getCommentsByAuthorId,
     deleteComment,
     updateComment,
+    updateCommentByAdmin,
 };

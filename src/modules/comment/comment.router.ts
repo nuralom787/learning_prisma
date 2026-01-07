@@ -12,6 +12,8 @@ router.post('/', verifyRole(UserRole.ADMIN, UserRole.USER), commentController.cr
 
 router.patch('/:id', verifyRole(UserRole.ADMIN, UserRole.USER), commentController.updateComment);
 
+router.patch('/moderate/:id', verifyRole(UserRole.ADMIN), commentController.updateCommentByAdmin);
+
 router.delete('/:id', verifyRole(UserRole.ADMIN, UserRole.USER), commentController.deleteComment);
 
 export const commentRouter = router;
