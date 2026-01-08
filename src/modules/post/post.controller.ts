@@ -87,6 +87,18 @@ const deletePost = async (req: Request, res: Response) => {
     }
 };
 
+
+// ! Get Stats Posts (Admin Only).
+const getStatsPosts = async (req: Request, res: Response) => {
+    try {
+        const stats = await postService.getStatsPosts();
+        res.status(200).json(stats);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Failed to get posts stats" });
+    }
+};
+
 export const postController = {
     createPost,
     getAllPosts,
@@ -94,4 +106,5 @@ export const postController = {
     getAllPostsByUser,
     updatePost,
     deletePost,
+    getStatsPosts,
 };

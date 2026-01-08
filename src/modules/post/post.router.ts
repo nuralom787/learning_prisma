@@ -8,6 +8,8 @@ router.get('/', postController.getAllPosts);
 
 router.get('/my-posts', verifyRole(UserRole.ADMIN, UserRole.USER), postController.getAllPostsByUser);
 
+router.get('/stats', verifyRole(UserRole.ADMIN), postController.getStatsPosts);
+
 router.get('/:id', postController.getSinglePost);
 
 router.post('/', verifyRole(UserRole.ADMIN, UserRole.USER), postController.createPost);

@@ -1,4 +1,4 @@
-import { Post } from "../../../generated/prisma/client";
+import { Post, PostStatus } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
 // ! Create New Posts.
@@ -182,6 +182,26 @@ const deletePost = async (postId: string, authorId: string, authorRole: string) 
     return result;
 };
 
+
+// ! Get Stats Posts (Admin Only).
+const getStatsPosts = async () => {
+    const stats = await prisma.$transaction(async (tx) => {
+        const totalPosts = await tx.post.count();
+        const totalViews = await tx.post.aggregate({
+            _sum: { views: true },
+        });
+        const totalComments = await tx.comment.count();
+        const totalUsers = await tx.user.count();
+        const adminCount = await tx.user.count({ where: { role: 'ADMIN' } });
+        const featuredPosts = await tx.post.count({ where: { isFeatured: true } });
+        const draftPosts = await tx.post.count({ where: { status: PostStatus.DRAFT } });
+        const publishedPosts = await tx.post.count({ where: { status: PostStatus.PUBLISHED } });
+        const archivedPosts = await tx.post.count({ where: { status: PostStatus.ARCHIVED } });
+        return { totalPosts, totalComments, featuredPosts, draftPosts, publishedPosts, archivedPosts, totalUsers, adminCount, totalViews: totalViews._sum.views || 0 };
+    });
+    return stats;
+};
+
 export const postService = {
     createPost,
     getAllPosts,
@@ -189,4 +209,5 @@ export const postService = {
     getAllPostsByUser,
     updatePost,
     deletePost,
+    getStatsPosts,
 };
