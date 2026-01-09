@@ -1,16 +1,16 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { postService } from "./post.service";
 import pagination from "../../helpers/paginationHelper";
 
 // ! Create New Posts.
-const createPost = async (req: Request, res: Response) => {
+const createPost = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // console.log(req.user);
         const result = await postService.createPost(req.body, req.user?.id as string);
         res.status(201).json(result);
     }
     catch (error) {
-        res.status(500).json({ error: "Failed to create post" });
+        next(error)
+        // res.status(500).json({ error: "Failed to create post" });
     }
 };
 
@@ -58,7 +58,7 @@ const getAllPostsByUser = async (req: Request, res: Response) => {
 
 
 // ! Update Post by ID.
-const updatePost = async (req: Request, res: Response) => {
+const updatePost = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const postId = req.params.id as string;
         const data = req.body;
@@ -68,7 +68,8 @@ const updatePost = async (req: Request, res: Response) => {
         res.status(200).json(updatedPost);
     }
     catch (error) {
-        res.status(500).json({ error: "Failed to update post" });
+        next(error)
+        // res.status(500).json({ error: "Failed to update post" });
     }
 };
 
