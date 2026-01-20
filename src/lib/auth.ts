@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const auth = betterAuth({
-    trustedOrigins: [process.env.APP_URL || "http://localhost:5000"],
+    trustedOrigins: [process.env.APP_URL || "http://localhost:5000", "http://localhost:3000"],
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
